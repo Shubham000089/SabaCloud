@@ -1,0 +1,92 @@
+***Guidelines for using the script***
+
+1. Introduction
+This document provides detailed instructions for using the web scraping script created for the SabaCloud site. The script extracts required data, writes it into Excel files, and downloads certificates as needed. The document also includes guidelines for setting up and running the script, ensuring smooth operation and minimal disruption.
+
+2. GitHub Credentials
+To access the GitHub repository containing the script, use the following credentials:
+Email: sabacloud397@gmail.com
+Password: P@ssw0rdsaba
+
+3. Repository Structure
+The repository is named SabaCloud and is organized as follows:
+
+* Extracted Excels:
+This folder contains all the data extracted by the script. Before performing any Git actions, back up this folder to avoid data loss, especially since the script runs for multiple hours.
+
+* Reports:
+This folder stores reports from each script run. These reports are essential for debugging and analyzing the script's performance.
+
+* Resources:
+This folder includes the resource file containing all the keywords used in the test cases (TCs). It also contains the locator file and a custom code file for adding any specialized Python code.
+
+* Sample Excel:
+This folder contains blank Excel templates categorized by organization name. Use these templates to initialize data before running the script.
+
+* Testcases:
+This folder contains the test case files from which the script is executed.
+
+4. Running the Script
+4.1 Headless Mode
+* To run the script in headless mode:
+
+- Navigate to the Resources folder.
+- Open the resource file where the "Open My Browser" keyword is defined (line 18).
+- Uncomment line 21 to enable headless mode.
+- Ensure that line 22 is commented out to avoid failure.
+- Use headless mode when attachments do not need to be downloaded. If attachments need to be downloaded, the script must be run in non-headless mode where actions can be observed.
+
+4.2 Non-Headless Mode
+* To run the script in non-headless mode:
+
+- Follow the instructions above, but comment out line 21 and uncomment line 22.
+- Ensure that the keyword "Action on Attachment to download certificates" is present at line 395 if you need to download certificates.
+
+4.3 Initial Setup
+* Before starting the first run:
+
+- Delete all files in the Extracted Excel folder.
+- Copy and paste the blank Excel files from the Sample Excel folder into the Extracted Excel folder.
+
+4.4 Running the Script: New vs. Broken Runs
+* New Run:
+- If you're starting data scraping from the first employee of an organization:
+- Open the relevant .robot file in the Testcases folder.
+Ensure that the following line is written at line 13:
+
+```Extract Data From SabaCloud ${Org_URL} ${sheet_name}```
+
+* Broken Run:
+- If resuming data scraping from a specific employee:
+- Ensure that the following line is written at line 13:
+
+```Extract Data From SabaCloud Broken ${Org_URL} ${sheet_name} ${start}```
+- At line 9, set the variable start to the name of the employee from which the script should resume. This name can be found in the report of the last failure.
+
+4.5 Extracting Employee Names for Broken Runs
+* To extract the employee name from the last failure:
+
+- Open the relevant report folder for the organization.
+- Search for the j loop in the log file to find the last employee name where the script failed.
+- Use this name as the start variable in the TC file.
+
+5. Execution
+* To run the script:
+
+- Open a terminal in PyCharm.
+- Change the directory to the Testcases folder:
+```cd Testcases```
+
+- Run the following command:
+```robot --outputdir ..\Reports\{org_name} {org_name}.robot```
+Example:
+
+```robot --outputdir ..\Reports\ACC ACC.robot```
+
+Note:
+In headless mode, you can add up to 3 files.
+In non-headless mode, limit it to 2 files to avoid failures.
+
+6. Handling Unexpected Failures
+- If the script fails due to an unexpected or uncovered condition, do not alter any files. Please reach out to me via WhatsApp, and I will access the system to make the necessary adjustments.
+

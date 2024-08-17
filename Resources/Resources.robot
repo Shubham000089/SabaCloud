@@ -405,6 +405,36 @@ Action on Attachment
 #    Click Element    ${ATTACHMENT}
     Write Data In Excel At Completion    ${sheet_name}
 
+Action on Attachment to download certificates
+    [Arguments]    ${sheet_name}
+    ${attachment_name} =     Get Text    ${ATTACHMENT}
+    Set Global Variable    ${attachment_name}
+    Click Element    ${ATTACHMENT}
+    Sleep    2
+    Switch Window    new
+
+    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\${name_of_org}
+    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
+    Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
+    ${random} =    Custom_Code.gen_random_string
+    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random} ${attachment_name}
+    Sleep    1.5
+    Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
+    Sleep    1
+    FOR    ${i}    IN RANGE    1    3
+        Run    python -c "import pyautogui; pyautogui.press('tab')"
+        Sleep    0.5
+    END
+    Run    python -c "import pyautogui; pyautogui.press('enter')"
+    Sleep    1.5
+
+    Write Data In Excel At Completion    ${sheet_name}
+    Close Window
+    switch window       title=Blueprint
+    Wait Until Element Is Visible    ${IFRAME}
+    Select Frame    ${IFRAME}
+    Sleep    0.5
+
 Move to next certificate
     [Arguments]    ${sheet_name}
     Press Keys    None    ARROW_LEFT
