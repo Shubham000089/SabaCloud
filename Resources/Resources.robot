@@ -397,6 +397,9 @@ Check Attachment available
 
     ${check} =     Run Keyword And Return Status    Wait Until Element Is Visible    ${B_MODULE_CLOSE}
     Run Keyword If    '${check}' == 'True'    Click Element    ${B_MODULE_CLOSE}
+    
+    ${check1} =     Run Keyword And Return Status    Wait Until Element Is Not Visible    ${B_MODULE_CLOSE}    timeout=1.5
+    Run Keyword If    '${check1}' == 'False'    Click Element    ${B_MODULE_CLOSE}
 
 Action on Attachment
     [Arguments]    ${sheet_name}
