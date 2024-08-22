@@ -29,6 +29,8 @@ FIRST_CERT = "(//a[@title='Course']) [1]"
 
 # Completed
 LABEL_TYPE = "//label[contains(text(), 'Type')]"
+TEXT_NO_DATA = "//div[@id='emptyMessageText']//span[contains(text(), 'No data available')]"
+B_APPLY_FILTER = "//span[contains(text(), 'Apply filters')]/.."
 
 # Attachment
 ATTACHMENT = "//div[contains(@class, 'x-panel')]//span[@class='attachment-link']//a"

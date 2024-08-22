@@ -368,6 +368,9 @@ Preloop for certification
     Click Element After Visible    ${COMPLETED}
     Run Keyword And Ignore Error    Wait Until Element Is Visible    ${LABEL_TYPE}    timeout=50
 
+    ${check} =    Run Keyword And Return Status    Wait Until Element Is Visible    ${TEXT_NO_DATA}    timeout=1.5
+    Run Keyword If    '${check}' = 'True'    Click Element    ${B_APPLY_FILTER}
+
 Get Certificate Name
     [Arguments]    ${k}
     [Documentation]    Get the certificate name

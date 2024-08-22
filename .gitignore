@@ -26,3 +26,6 @@ __pycache__
 .settings
 .jython_cache
 .mypy_cache/
+*.xlsx
+Reports
+Extracted Excel
