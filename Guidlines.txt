@@ -40,7 +40,7 @@ This folder contains the test case files from which the script is executed.
 * To run the script in non-headless mode:
 
 - Follow the instructions above, but comment out line 21 and uncomment line 22.
-- Ensure that the keyword "Action on Attachment to download certificates" is present at line 395 if you need to download certificates.
+- Ensure that the keyword "Action on Attachment to download certificates" is present at line 398 if you need to download certificates.
 
 4.3 Initial Setup
 * Before starting the first run:
