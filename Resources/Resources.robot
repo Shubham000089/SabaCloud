@@ -18,8 +18,8 @@ ${found}    False
 Open my browser
     [Arguments]    ${LOGIN_URL}
     # Local
-    Open Browser      ${LOGIN_URL}        headless Chrome
-#    Open Browser      ${LOGIN_URL}        Chrome
+#    Open Browser      ${LOGIN_URL}        headless Chrome
+    Open Browser      ${LOGIN_URL}        Chrome
     Maximize Browser Window
     # Server
 #    ${chrome_options} =     Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
@@ -366,10 +366,11 @@ Preloop for certification
     Press Keys    None    PAGE_DOWN
     Sleep    2
     Click Element After Visible    ${COMPLETED}
-    Run Keyword And Ignore Error    Wait Until Element Is Visible    ${LABEL_TYPE}    timeout=50
+    ${check1} =    Run Keyword And Return Status    Wait Until Element Is Visible    ${LABEL_TYPE}    timeout=10
+    Run Keyword If    '${check1}' == 'False'    Click Element    ${COMPLETED}
 
     ${check} =    Run Keyword And Return Status    Wait Until Element Is Visible    ${TEXT_NO_DATA}    timeout=1.5
-    Run Keyword If    '${check}' = 'True'    Click Element    ${B_APPLY_FILTER}
+    Run Keyword If    '${check}' == 'True'    Click Element    ${B_APPLY_FILTER}
 
 Get Certificate Name
     [Arguments]    ${k}
@@ -395,7 +396,7 @@ Check Attachment available
 
     # Check for Attachment
     ${check_attachment} =     Run Keyword And Return Status    Wait Until Element Is Visible    ${ATTACHMENT}    timeout=2
-    Run Keyword If    '${check_attachment}' == 'True'    Action on Attachment    ${sheet_name}
+    Run Keyword If    '${check_attachment}' == 'True'    Action on Attachment to download certificates    ${sheet_name}
     Run Keyword If    '${check_attachment}' == 'False'    Write Data In Excel At Attachment    ${sheet_name}
 
     ${check} =     Run Keyword And Return Status    Wait Until Element Is Visible    ${B_MODULE_CLOSE}
@@ -419,11 +420,13 @@ Action on Attachment to download certificates
     Sleep    2
     Switch Window    new
 
-    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\${name_of_org}
-    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
+# change the folder name on 424, 425, 428 when you run next company
+
+    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\ACC
+    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\ACC
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
     ${random} =    Custom_Code.gen_random_string
-    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random} ${attachment_name}
+    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\ACC\\${random} ${attachment_name}
     Sleep    1.5
     Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
     Sleep    1
