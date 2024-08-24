@@ -46,27 +46,27 @@ Click Element After Visible
 
 # Specific
 Extract Data From SabaCloud
-    [Arguments]    ${Org_URL}    ${sheet_name}
-    Preloop process    ${Org_URL}    ${sheet_name}
+    [Arguments]    ${Org_URL}    ${sheet_name}    ${name_of_org}
+    Preloop process    ${Org_URL}    ${sheet_name}    ${name_of_org}
 #    Loop of Organizations
 
 Extract Data From SabaCloud Broken
-    [Arguments]    ${Org_URL}    ${sheet_name}    ${start}
-    Preloop process broken    ${Org_URL}    ${sheet_name}    ${start}
+    [Arguments]    ${Org_URL}    ${sheet_name}    ${start}    ${name_of_org}
+    Preloop process broken    ${Org_URL}    ${sheet_name}    ${start}    ${name_of_org}
 
 Preloop process
-    [Arguments]    ${Org_URL}    ${sheet_name}
+    [Arguments]    ${Org_URL}    ${sheet_name}    ${name_of_org}
     Open My Browser        ${Login_URL}
     Sign-In process
     Go To    ${Org_URL}
-    Direct Link Loop    ${sheet_name}
+    Direct Link Loop    ${sheet_name}    ${name_of_org}
 
 Preloop process broken
-    [Arguments]    ${Org_URL}    ${sheet_name}    ${start}
+    [Arguments]    ${Org_URL}    ${sheet_name}    ${start}    ${name_of_org}
     Open My Browser        ${Login_URL}
     Sign-In process
     Go To    ${Org_URL}
-    Direct Link Loop Broken    ${sheet_name}    ${start}
+    Direct Link Loop Broken    ${sheet_name}    ${start}    ${name_of_org}
 
 Sign-In process
     Add text in textbox    ${TB_USERNAME}    ${Username}
@@ -99,7 +99,7 @@ Open Organization Dropdown
     Click Element After Visible    ${DO_ORGANISATION}
 
 Direct Link Loop
-    [Arguments]    ${sheet_name}
+    [Arguments]    ${sheet_name}    ${name_of_org}
     [Documentation]    We are directly heading to link by avoiding organizational loop
     Waits for Stable Page of Organization
     Wait Until Element Is Visible    ${IFRAME}    timeout=30
@@ -107,6 +107,7 @@ Direct Link Loop
     Get count of employee
     Getting data of all employee in list
     FOR    ${j}    IN    @{Employee_list}
+        Append To List    ${Temp_Employee_list}        ${j}
         Log To Console    In Loop of employee for ${j}
         Waits for Stable Page of Organization
         # Check for Login page
@@ -122,12 +123,12 @@ Direct Link Loop
         Run Keyword And Ignore Error    Wait Until Element Is Visible    ${PLEASE_WAIT}    timeout=4
         Wait Until Element Is Not Visible    ${PLEASE_WAIT}    timeout=100
         ${check_completed} =    Run Keyword And Return Status     Wait Until Element Is Visible    ${C_COMPLETED}
-        Run Keyword If    '${check_completed}' == 'True'    Further loop of certificates    ${sheet_name}
+        Run Keyword If    '${check_completed}' == 'True'    Further loop of certificates    ${sheet_name}    ${name_of_org}
         Run Keyword If    '${check_completed}' == 'False'   Exit From Employee
     END
 
 Direct Link Loop Broken
-    [Arguments]    ${sheet_name}    ${start}
+    [Arguments]    ${sheet_name}    ${start}    ${name_of_org}
     [Documentation]    We are directly heading to link by avoiding organizational loop
     Waits for Stable Page of Organization
     Wait Until Element Is Visible    ${IFRAME}    timeout=30
@@ -138,7 +139,7 @@ Direct Link Loop Broken
 #       For Running single broken list
         Log To Console    In Loop of employee for ${j}
         Run Keyword If    "${j}" == "${start}"    Loop
-        Run Keyword If    '${found}' == 'True'    Temp adjustment    ${j}
+        Run Keyword If    '${found}' == 'True'    Temp adjustment    ${j}    ${name_of_org}
 #       Ends here
     END
 
@@ -192,7 +193,8 @@ Process of login to search box
     Select Frame    ${IFRAME}
 
 Temp adjustment
-    [Arguments]   ${j}
+    [Arguments]   ${j}    ${name_of_org}
+    Append To List    ${Temp_Employee_list}        ${j}
     Waits for Stable Page of Organization
     # Check for Login page
     Unselect Frame
@@ -209,7 +211,7 @@ Temp adjustment
     Run Keyword And Ignore Error    Wait Until Element Is Visible    ${PLEASE_WAIT}    timeout=4
     Wait Until Element Is Not Visible    ${PLEASE_WAIT}    timeout=100
     ${check_completed} =    Run Keyword And Return Status     Wait Until Element Is Visible    ${C_COMPLETED}
-    Run Keyword If    '${check_completed}' == 'True'    Further loop of certificates    ${sheet_name}
+    Run Keyword If    '${check_completed}' == 'True'    Further loop of certificates    ${sheet_name}    ${name_of_org}
     Run Keyword If    '${check_completed}' == 'False'   Exit From Employee
 
 Loop
@@ -218,8 +220,10 @@ Loop
 
 Getting data of all employee in list
     [Documentation]    Create list of all the employees
-    ${Employee_list} =    Create List
-    Log To Console    Empty List Created ...
+    ${count} =     Get Length    ${Employee_list}
+    Run Keyword If    '${count}' == '0'    SubKeyword: Getting data of all employee in list
+
+SubKeyword: Getting data of all employee in list
     FOR    ${l}    IN RANGE    1    ${integer_result}+2    # Count
         ${cnt_of_emp12} =     Get Text    ${PAGE_COUNT_EMP}
         ${range}    ${total}    Split String    ${cnt_of_emp12}    of
@@ -243,9 +247,9 @@ Getting data of all employee in list
     Set Global Variable    ${Employee_list}
     ${length_of_list} =     Get Length    ${Employee_list}
     Log To Console    List Created !!!
-    
+
 Further loop of certificates
-    [Arguments]    ${sheet_name}
+    [Arguments]    ${sheet_name}    ${name_of_org}
     [Documentation]    When u get land in employee, this process starts
     Get employee name and person no.
     Preloop for certification
@@ -274,7 +278,7 @@ Further loop of certificates
         Sleep    0.3
         Press Keys    None    ARROW_DOWN
         Sleep    0.3
-        Check View is available    ${k}    ${sheet_name}
+        Check View is available    ${k}    ${sheet_name}    ${name_of_org}
     END
     Exit From Employee
 
@@ -380,14 +384,14 @@ Get Certificate Name
     Set Global Variable    ${c_certificate_name}
 
 Check View is available
-    [Arguments]    ${k}    ${sheet_name}
+    [Arguments]    ${k}    ${sheet_name}    ${name_of_org}
     Log    ${cnt_of_view}
     ${check} =     Run Keyword And Return Status    Wait Until Element Is Visible    (//div[contains(@id, 'sjsmenu')]//a[contains(@id, 'menuitem')]//span[normalize-space(text())='View']) [${cnt_of_view}]    timeout=1.5
-    Run Keyword If    '${check}' == 'True'    Check Attachment available    ${sheet_name}
+    Run Keyword If    '${check}' == 'True'    Check Attachment available    ${sheet_name}    ${name_of_org}
     Run Keyword If    '${check}' == 'False'    Move to next certificate    ${sheet_name}
 
 Check Attachment available
-    [Arguments]    ${sheet_name}
+    [Arguments]    ${sheet_name}    ${name_of_org}
     Click Element    (//div[contains(@id, 'sjsmenu')]//a[contains(@id, 'menuitem')]//span[normalize-space(text())='View']) [${cnt_of_view}]
 
     # Increase Count By 1
@@ -396,7 +400,7 @@ Check Attachment available
 
     # Check for Attachment
     ${check_attachment} =     Run Keyword And Return Status    Wait Until Element Is Visible    ${ATTACHMENT}    timeout=2
-    Run Keyword If    '${check_attachment}' == 'True'    Action on Attachment to download certificates    ${sheet_name}
+    Run Keyword If    '${check_attachment}' == 'True'    Action on Attachment to download certificates    ${sheet_name}    ${name_of_org}
     Run Keyword If    '${check_attachment}' == 'False'    Write Data In Excel At Attachment    ${sheet_name}
 
     ${check} =     Run Keyword And Return Status    Wait Until Element Is Visible    ${B_MODULE_CLOSE}
@@ -409,11 +413,10 @@ Action on Attachment
     [Arguments]    ${sheet_name}
     ${attachment_name} =     Get Text    ${ATTACHMENT}
     Set Global Variable    ${attachment_name}
-#    Click Element    ${ATTACHMENT}
     Write Data In Excel At Completion    ${sheet_name}
 
 Action on Attachment to download certificates
-    [Arguments]    ${sheet_name}
+    [Arguments]    ${sheet_name}    ${name_of_org}
     ${attachment_name} =     Get Text    ${ATTACHMENT}
     Set Global Variable    ${attachment_name}
     Click Element    ${ATTACHMENT}
@@ -423,10 +426,10 @@ Action on Attachment to download certificates
 # change the folder name on 424, 425, 428 when you run next company
 
     ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\ACC
-    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\ACC
+    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
     ${random} =    Custom_Code.gen_random_string
-    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\ACC\\${random} ${attachment_name}
+    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random} ${attachment_name}
     Sleep    1.5
     Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
     Sleep    1
@@ -492,3 +495,7 @@ Common Excel Data
     Custom_Code.add_value    D    ${emp_name}    ${sheet_name}
     Custom_Code.add_value    E    ${text_person_no}    ${sheet_name}
     Custom_Code.add_value    F    ${c_certificate_name}    ${sheet_name}
+
+Teardown words
+    Run Keyword If All Tests Passed    Log To Console       Testcase is passed successfully
+    Run Keyword If Any Tests Failed      Log To Console    All retries failed after ${retry_count} attempts.
