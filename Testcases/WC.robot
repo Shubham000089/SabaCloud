@@ -10,7 +10,7 @@ ${Org_URL}    https://iea-nosso.sabacloud.com/Saba/Web_spf/NA10P1PRD040/app/team
 ${Sheet_name}    ../Extracted Excel/WC.xlsx
 ${start}     JOHN BUTCHER    # Set name here if you have to start the script using broken keyword.
 ${name_of_org}    WC        # This will not required if you are not downloading attachments.
-${MAX_RETRIES}    30          # Adjust according to need
+${MAX_RETRIES}    50          # Adjust according to need
 ${retry_count}    0          # Never Change this
 
 *** Test Cases ***

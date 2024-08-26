@@ -425,7 +425,7 @@ Action on Attachment to download certificates
 
 # change the folder name on 424, 425, 428 when you run next company
 
-    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\ACC
+    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\${name_of_org}
     Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
     ${random} =    Custom_Code.gen_random_string
