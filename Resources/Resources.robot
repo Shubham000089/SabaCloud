@@ -419,11 +419,15 @@ Action on Attachment to download certificates
     [Arguments]    ${sheet_name}    ${name_of_org}
     ${attachment_name} =     Get Text    ${ATTACHMENT}
     Set Global Variable    ${attachment_name}
+    ${contains_zip}  Evaluate  '${ATTACHMENT_NAME}'.endswith('.zip')
+    Run Keyword If  ${contains_zip}  Click Element    ${ATTACHMENT}
+    Run Keyword If  not ${contains_zip}  Sub_keyword:Action on Attachment to download certificates    ${sheet_name}    ${name_of_org}
+
+Sub_keyword:Action on Attachment to download certificates
+    [Arguments]    ${sheet_name}    ${name_of_org}
     Click Element    ${ATTACHMENT}
     Sleep    2
     Switch Window    new
-
-# change the folder name on 424, 425, 428 when you run next company
 
     ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\${name_of_org}
     Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
