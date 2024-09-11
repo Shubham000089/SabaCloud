@@ -76,7 +76,7 @@ def add_value(cell_cords_1, value, file_name):
     with closing(load_workbook(filename=file_name)) as wb:
         ws = wb.active
         # from here change
-        col_letter = get_column_letter(9)
+        col_letter = get_column_letter(10)
         print(col_letter)
         max_col_row = len([cell for cell in ws[col_letter] if cell.value])
         max_col_row_1 = max_col_row + 1

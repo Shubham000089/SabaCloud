@@ -433,11 +433,41 @@ Sub_keyword:Action on Attachment to download certificates
     Sleep    2
     Switch Window    new
 
-    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    C:\\SabaCloud_Reports\\${name_of_org}
-    Run Keyword If    '${Check_path}' == 'False'    Create Directory    C:\\SabaCloud_Reports\\${name_of_org}
+    ${Directory} =     Set Variable    C:\\SabaCloud_Reports\\${name_of_org}
+    Set Global Variable    ${Directory}
+    ${Check_path} =    Run Keyword And Return Status     Directory Should Exist    ${Directory}
+    Run Keyword If    '${Check_path}' == 'False'    Create Directory    ${Directory}
+    Save the attachment using pyautogui
+
+    ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
+    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
+    Run Keyword If    '${check}' == 'False'    Takes action when pdf not downloaded at required location    ${sheet_name}
+    
+    # End
+    Close Window
+    switch window       title=Blueprint
+    Wait Until Element Is Visible    ${IFRAME}
+    Select Frame    ${IFRAME}
+    Sleep    0.5
+
+Takes action when pdf not downloaded at required location
+    [Arguments]    ${sheet_name}
+    Save the attachment using pyautogui
+    ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
+    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
+    Run Keyword If    '${check}' == 'False'    Save the attachment using pyautogui
+    ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
+    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
+    Run Keyword If    '${check}' == 'False'    Write Data In Excel At Completion Error    ${sheet_name}
+
+Save the attachment using pyautogui
+    [Documentation]    This will save the document using pyautoGUI, separated for error handling
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
     ${random} =    Custom_Code.gen_random_string
-    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random} ${attachment_name}
+    ${random_attachment_name} =     Set Variable    ${random} ${attachment_name}
+    Set Global Variable    ${random_attachment_name}
+    ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random_attachment_name}
+    Set Global Variable    ${resolved_path}
     Sleep    1.5
     Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
     Sleep    1
@@ -447,13 +477,6 @@ Sub_keyword:Action on Attachment to download certificates
     END
     Run    python -c "import pyautogui; pyautogui.press('enter')"
     Sleep    1.5
-
-    Write Data In Excel At Completion    ${sheet_name}
-    Close Window
-    switch window       title=Blueprint
-    Wait Until Element Is Visible    ${IFRAME}
-    Select Frame    ${IFRAME}
-    Sleep    0.5
 
 Move to next certificate
     [Arguments]    ${sheet_name}
@@ -473,6 +496,7 @@ Write Data In Excel At View
     Custom_Code.add_value    G    No    ${sheet_name}
     Custom_Code.add_value    H    No    ${sheet_name}
     Custom_Code.add_value    I    None    ${sheet_name}
+    Custom_Code.add_value    J    None    ${sheet_name}
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
@@ -482,15 +506,29 @@ Write Data In Excel At Attachment
     Custom_Code.add_value    G    Yes    ${sheet_name}
     Custom_Code.add_value    H    No    ${sheet_name}
     Custom_Code.add_value    I    None    ${sheet_name}
+    Custom_Code.add_value    J    None    ${sheet_name}
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
 Write Data In Excel At Completion
+    [Documentation]    Writes date when attachment get downloaded in required folder
     [Arguments]    ${sheet_name}
     Common Excel Data    ${sheet_name}
     Custom_Code.add_value    G    Yes    ${sheet_name}
     Custom_Code.add_value    H    Yes    ${sheet_name}
-    Custom_Code.add_value    I    ${attachment_name}    ${sheet_name}
+    Custom_Code.add_value    I   ${random_attachment_name}    ${sheet_name}
+    Custom_Code.add_value    J   Downloaded    ${sheet_name}
+    ${sr_no} =     Evaluate    ${sr_no} + 1
+    Set Global Variable    ${sr_no}
+
+Write Data In Excel At Completion Error
+    [Documentation]    Writes date when attachment get downloaded in required folder
+    [Arguments]    ${sheet_name}
+    Common Excel Data    ${sheet_name}
+    Custom_Code.add_value    G    Yes    ${sheet_name}
+    Custom_Code.add_value    H    Yes    ${sheet_name}
+    Custom_Code.add_value    I   ${random_attachment_name}    ${sheet_name}
+    Custom_Code.add_value    J   Not Downloaded    ${sheet_name}
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
