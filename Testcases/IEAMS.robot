@@ -8,9 +8,12 @@ Library    Collections
 ${Login_URL}    https://iea-nosso.sabacloud.com/Saba/Web_wdk/NA10P1PRD040/index/prelogin.rdf
 ${Org_URL}    https://iea-nosso.sabacloud.com/Saba/Web_spf/NA10P1PRD040/app/team/shared;spf-url=common%2Fteam%2Fteamhome%2Fxxemptyxx%2ForgAdmin%2Fbisut000000000003190
 ${Sheet_name}    ../Extracted Excel/IEAMS.xlsx
-${start}     BERENARD NORWOOD    # Set name here if you have to start the script using broken keyword.
+#STEVEN MILLS executed multiple times so need to force stop and then start with next employee
+#Shubham check why?
+#I stopped as it went to 1st record
+${start}     STEVEN MILLS    # Set name here if you have to start the script using broken keyword.
 ${name_of_org}    IEAMS        # This will not required if you are not downloading attachments.
-${MAX_RETRIES}    3          # Adjust according to need
+${MAX_RETRIES}    50          # Adjust according to need
 ${retry_count}    0          # Never Change this
 
 
@@ -30,9 +33,9 @@ Data from SabaCloud
         TRY
             Log To Console    Starting the main loop for ${i}th time
             Close All Browsers
-            Run Keyword If    '${i}' == '0'    Extract Data From SabaCloud Broken    ${Org_URL}    ${sheet_name}    ${emp_name}    ${name_of_org}
+            Run Keyword If    '${i}' == '0'    Extract Data From SabaCloud Broken    ${Org_URL}    ${sheet_name}    ${start}    ${name_of_org}
             ${length} =     Get Length    ${Temp_Employee_list}
-            ${length} =     Evaluate    ${length} - 1
+            ${length} =     Run Keyword If    ${length} > 1    Evaluate    ${length} - 1
             ${emp_name} =    Run Keyword If    ${length} > 0     Get From List    ${Temp_Employee_list}   ${length}
             Run Keyword If    '${i}' != '0'    Extract Data From SabaCloud Broken    ${Org_URL}    ${sheet_name}    ${emp_name}    ${name_of_org}
             BREAK

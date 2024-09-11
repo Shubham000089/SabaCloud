@@ -419,9 +419,13 @@ Action on Attachment to download certificates
     [Arguments]    ${sheet_name}    ${name_of_org}
     ${attachment_name} =     Get Text    ${ATTACHMENT}
     Set Global Variable    ${attachment_name}
-    ${contains_zip}  Evaluate  '${ATTACHMENT_NAME}'.endswith('.zip')
-    Run Keyword If  ${contains_zip}  Click Element    ${ATTACHMENT}
+    ${contains_zip}  Evaluate  '${ATTACHMENT_NAME}'.endswith('.zip') or '${ATTACHMENT_NAME}'.endswith('.tif')
+    Run Keyword If  ${contains_zip}  Zip Adjustment
     Run Keyword If  not ${contains_zip}  Sub_keyword:Action on Attachment to download certificates    ${sheet_name}    ${name_of_org}
+
+Zip Adjustment
+    Click Element    ${ATTACHMENT}
+    Sleep    1.25
 
 Sub_keyword:Action on Attachment to download certificates
     [Arguments]    ${sheet_name}    ${name_of_org}
