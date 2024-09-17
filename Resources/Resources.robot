@@ -424,8 +424,10 @@ Action on Attachment to download certificates
     Run Keyword If  not ${contains_zip}  Sub_keyword:Action on Attachment to download certificates    ${sheet_name}    ${name_of_org}
 
 Zip Adjustment
+    [Arguments]    ${sheet_name}
     Click Element    ${ATTACHMENT}
     Sleep    1.25
+    Write Data In Excel At Zip    ${sheet_name}
 
 Sub_keyword:Action on Attachment to download certificates
     [Arguments]    ${sheet_name}    ${name_of_org}
@@ -457,7 +459,7 @@ Takes action when pdf not downloaded at required location
     Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
     Run Keyword If    '${check}' == 'False'    Save the attachment using pyautogui
     ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
-    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
+#    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
     Run Keyword If    '${check}' == 'False'    Write Data In Excel At Completion Error    ${sheet_name}
 
 Save the attachment using pyautogui
@@ -518,6 +520,17 @@ Write Data In Excel At Completion
     Custom_Code.add_value    H    Yes    ${sheet_name}
     Custom_Code.add_value    I   ${random_attachment_name}    ${sheet_name}
     Custom_Code.add_value    J   Downloaded    ${sheet_name}
+    ${sr_no} =     Evaluate    ${sr_no} + 1
+    Set Global Variable    ${sr_no}
+
+Write Data In Excel At Zip
+    [Documentation]    Writes date when attachment get downloaded in required folder
+    [Arguments]    ${sheet_name}
+    Common Excel Data    ${sheet_name}
+    Custom_Code.add_value    G    Yes    ${sheet_name}
+    Custom_Code.add_value    H    Yes    ${sheet_name}
+    Custom_Code.add_value    I   ${attachment_name}    ${sheet_name}
+    Custom_Code.add_value    J   Refer Downloads    ${sheet_name}
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
