@@ -87,29 +87,6 @@ def add_value(cell_cords_1, value, file_name):
 
 
 def gen_random_string(length=3):
-    characters = string.ascii_letters + string.digits  # A-Z, a-z, 0-9
+    characters = string.ascii_letters  # A-Z, a-z, 0-9
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
-
-
-def save_file(file_path):
-    pyautogui.hotkey('ctrl', 's')
-    pyautogui.sleep(2)
-    pyautogui.typewrite(file_path)
-    for _ in range(3):
-        pyautogui.press('tab')
-        pyautogui.sleep(0.5)
-    pyautogui.press('enter')
-    pyautogui.sleep(3)
-
-def start_virtual_display():
-    display = Display(visible=True, size=(1920, 1080))
-    display.start()
-    return display
-
-def stop_virtual_display(display):
-    display.stop()
-
-if __name__ == "__main__":
-    file_path = sys.argv[1]
-    save_file(file_path)

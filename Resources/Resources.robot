@@ -12,15 +12,24 @@ ${Username}    CERTTESTER
 ${Password}    P@ssw0rd123
 ${sr_no}    1
 ${found}    False
+${DOWNLOAD_PATH}    C:\\SabaCloud_Reports\\${name_of_org}
 
 *** Keywords ***
 # General
 Open my browser
     [Arguments]    ${LOGIN_URL}
+    # Specific Download Path
+    Log To Console    ${DOWNLOAD_PATH}
+    ${chrome_options}=    Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys
+    ${prefs}=    Create Dictionary    download.default_directory=${DOWNLOAD_PATH}    profile.default_content_settings.popups=0
+    Call Method    ${chrome_options}    add_experimental_option    prefs    ${prefs}
+    Create Webdriver    Chrome    options=${chrome_options}
+    Go To    ${LOGIN_URL}
+    Maximize Browser Window
     # Local
 #    Open Browser      ${LOGIN_URL}        headless Chrome
-    Open Browser      ${LOGIN_URL}        Chrome
-    Maximize Browser Window
+#    Open Browser      ${LOGIN_URL}        Chrome
+#    Maximize Browser Window
     # Server
 #    ${chrome_options} =     Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys, selenium.webdriver
 #    Call Method    ${chrome_options}   add_argument    headless
@@ -420,14 +429,14 @@ Action on Attachment to download certificates
     ${attachment_name} =     Get Text    ${ATTACHMENT}
     Set Global Variable    ${attachment_name}
     ${contains_zip}  Evaluate  '${ATTACHMENT_NAME}'.endswith('.zip') or '${ATTACHMENT_NAME}'.endswith('.tif')
-    Run Keyword If  ${contains_zip}  Zip Adjustment
+    Run Keyword If  ${contains_zip}  Zip Adjustment    ${sheet_name}
     Run Keyword If  not ${contains_zip}  Sub_keyword:Action on Attachment to download certificates    ${sheet_name}    ${name_of_org}
 
 Zip Adjustment
     [Arguments]    ${sheet_name}
     Click Element    ${ATTACHMENT}
     Sleep    1.25
-    Write Data In Excel At Zip    ${sheet_name}
+    Write Data In Excel At Zip Downloads    ${sheet_name}
 
 Sub_keyword:Action on Attachment to download certificates
     [Arguments]    ${sheet_name}    ${name_of_org}
@@ -467,11 +476,14 @@ Save the attachment using pyautogui
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 's')"
     ${random} =    Custom_Code.gen_random_string
     ${random_attachment_name} =     Set Variable    ${random} ${attachment_name}
+
     Set Global Variable    ${random_attachment_name}
     ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random_attachment_name}
     Set Global Variable    ${resolved_path}
-    Sleep    1.5
-    Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
+    Run    python -c "import pyperclip; pyperclip.copy('${resolved_path}')"
+    Sleep    1
+#    Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
+    Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 'v')"
     Sleep    1
     FOR    ${i}    IN RANGE    1    3
         Run    python -c "import pyautogui; pyautogui.press('tab')"
@@ -523,14 +535,25 @@ Write Data In Excel At Completion
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
-Write Data In Excel At Zip
+Write Data In Excel At Zip Downloads
     [Documentation]    Writes date when attachment get downloaded in required folder
     [Arguments]    ${sheet_name}
     Common Excel Data    ${sheet_name}
     Custom_Code.add_value    G    Yes    ${sheet_name}
     Custom_Code.add_value    H    Yes    ${sheet_name}
     Custom_Code.add_value    I   ${attachment_name}    ${sheet_name}
-    Custom_Code.add_value    J   Refer Downloads    ${sheet_name}
+    Custom_Code.add_value    J   Downloaded    ${sheet_name}
+    ${sr_no} =     Evaluate    ${sr_no} + 1
+    Set Global Variable    ${sr_no}
+
+Write Data In Excel When Zip Not Downloaded
+    [Documentation]    Writes date when attachment get downloaded in required folder
+    [Arguments]    ${sheet_name}
+    Common Excel Data    ${sheet_name}
+    Custom_Code.add_value    G    Yes    ${sheet_name}
+    Custom_Code.add_value    H    Yes    ${sheet_name}
+    Custom_Code.add_value    I   ${attachment_name}    ${sheet_name}
+    Custom_Code.add_value    J   Not Downloaded    ${sheet_name}
     ${sr_no} =     Evaluate    ${sr_no} + 1
     Set Global Variable    ${sr_no}
 
