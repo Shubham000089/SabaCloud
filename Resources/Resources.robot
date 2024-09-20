@@ -464,12 +464,13 @@ Sub_keyword:Action on Attachment to download certificates
 Takes action when pdf not downloaded at required location
     [Arguments]    ${sheet_name}
     Save the attachment using pyautogui
+    Sleep    2
     ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
     Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
     Run Keyword If    '${check}' == 'False'    Save the attachment using pyautogui
-    ${check} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
-#    Run Keyword If    '${check}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
-    Run Keyword If    '${check}' == 'False'    Write Data In Excel At Completion Error    ${sheet_name}
+    ${check515} =     Run Keyword And Return Status    File Should Exist    ${resolved_path}
+    Run Keyword If    '${check515}' == 'True'    Write Data In Excel At Completion    ${sheet_name}
+    Run Keyword If    '${check515}' == 'False'    Write Data In Excel At Completion Error    ${sheet_name}
 
 Save the attachment using pyautogui
     [Documentation]    This will save the document using pyautoGUI, separated for error handling
@@ -481,10 +482,9 @@ Save the attachment using pyautogui
     ${resolved_path}=    Set Variable    C:\\SabaCloud_Reports\\${name_of_org}\\${random_attachment_name}
     Set Global Variable    ${resolved_path}
     Run    python -c "import pyperclip; pyperclip.copy('${resolved_path}')"
-    Sleep    1
-#    Run    python -c "import pyautogui; pyautogui.typewrite('${resolved_path}')"
+    Sleep    3
     Run    python -c "import pyautogui; pyautogui.hotkey('ctrl', 'v')"
-    Sleep    1
+    Sleep    1.5
     FOR    ${i}    IN RANGE    1    3
         Run    python -c "import pyautogui; pyautogui.press('tab')"
         Sleep    0.5

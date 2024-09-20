@@ -59,19 +59,6 @@ def read_test_data(cell):
     return cell_value
 
 
-# def add_value(cell_cords_1, value):
-#     with closing(load_workbook(filename=file_name)) as wb:
-#         ws = wb.active
-#         # from here change
-#         col_letter = get_column_letter(9)
-#         print(col_letter)
-#         max_col_row = len([cell for cell in ws[col_letter] if cell.value])
-#         max_col_row_1 = max_col_row + 1
-#         # up to here
-#         cell_cords = f"{cell_cords_1}{max_col_row_1}"
-#         ws[cell_cords] = value
-#         wb.save(file_name)
-
 def add_value(cell_cords_1, value, file_name):
     with closing(load_workbook(filename=file_name)) as wb:
         ws = wb.active
@@ -86,7 +73,7 @@ def add_value(cell_cords_1, value, file_name):
         wb.save(file_name)
 
 
-def gen_random_string(length=3):
-    characters = string.ascii_letters  # A-Z, a-z, 0-9
+def gen_random_string(length=5):
+    characters = string.digits  # A-Z, a-z, 0-9
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
